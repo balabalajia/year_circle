@@ -1,0 +1,193 @@
+# 环形月份图画布项目 - Git忽略文件配置
+# 该文件定义了不需要纳入版本控制的文件和目录
+
+# ================================
+# 操作系统相关文件
+# ================================
+
+# macOS 系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows 系统文件
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux 系统文件
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ================================
+# 编辑器和IDE相关文件
+# ================================
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# WebStorm / IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ================================
+# 项目特定文件
+# ================================
+
+# 用户上传的图片文件（避免大文件进入版本控制）
+uploads/
+user-images/
+temp-images/
+
+# 用户数据和配置文件
+user-data/
+local-storage/
+*.user.json
+user-config.json
+
+# 导出的图片文件
+exports/
+downloads/
+generated-images/
+
+# 临时文件和缓存
+temp/
+tmp/
+cache/
+.cache/
+
+# 日志文件
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ================================
+# 开发工具相关
+# ================================
+
+# Node.js 相关（如果后续添加构建工具）
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# 包管理器锁定文件（根据项目需要选择保留）
+# package-lock.json
+# yarn.lock
+
+# 构建输出目录
+dist/
+build/
+out/
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ================================
+# 测试相关
+# ================================
+
+# 测试覆盖率报告
+coverage/
+.nyc_output/
+
+# 测试结果
+test-results/
+junit.xml
+
+# ================================
+# 备份和版本文件
+# ================================
+
+# 备份文件
+*.bak
+*.backup
+*.old
+*.orig
+
+# 版本文件
+*.version
+
+# ================================
+# 压缩文件
+# ================================
+
+# 压缩包文件
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ================================
+# 文档和设计文件（可选）
+# ================================
+
+# 如果不想版本控制大型设计文件，可以取消注释
+# *.psd
+# *.ai
+# *.sketch
+
+# 临时文档
+*.tmp
+*.temp
+
+# ================================
+# 项目特定忽略
+# ================================
+
+# 开发过程中的测试文件
+test-*.html
+debug-*.js
+experimental/
+
+# 性能分析文件
+*.prof
+*.trace
+
+# 错误报告
+error-reports/
+crash-dumps/
+
+
+# useful_docs/
+# prepare_docs/

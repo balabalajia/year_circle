@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>环形月份图画布 - 年度回顾工具</title>
+    
+    <!-- 引入Google Fonts - Inter字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- 引入第三方库 -->
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+</head>
+<body>
+    <!-- 主容器 -->
+    <div class="app-container">
+        <!-- 顶部工具栏 -->
+        <header class="toolbar">
+            <div class="toolbar-left">
+                <h1 class="app-title">环形月份图画布</h1>
+                <div class="year-selector">
+                    <label for="year-selector">年份：</label>
+                    <div class="year-input-group">
+                        <button id="year-prev" class="year-nav-btn" title="上一年">‹</button>
+                        <input type="number" id="year-input" class="year-input" 
+                               min="1900" max="2100" step="1" value="2024">
+                        <button id="year-next" class="year-nav-btn" title="下一年">›</button>
+                    </div>
+                    <div class="year-info">
+                        <span id="year-type" class="year-type-indicator"></span>
+                    </div>
+                </div>
+                
+                <!-- V1.2新增：起始日期选择器 -->
+                <div class="start-date-selector">
+                    <label for="start-date-input">起始日期：</label>
+                    <input type="date" id="start-date-input" class="start-date-input" 
+                           title="设置年度周期的起始日期">
+                    <button id="reset-start-date" class="reset-btn" title="重置为1月1日">重置</button>
+                </div>
+            </div>
+        
+            <div class="toolbar-right">
+                <!-- V1.4新增：存储状态显示 -->
+                <div class="storage-status">
+                    <span id="storage-indicator" class="storage-indicator" title="存储状态">                        <span id="storage-type" class="storage-type">浏览器存储</span>
+                    </span>
+                    <button id="storage-settings" class="btn btn-icon" title="存储设置">⚙️</button>
+                </div>
+                
+                <div class="toolbar-divider"></div>
+                
+                <button id="export-png" class="btn btn-secondary">导出PNG</button>
+                <button id="export-json" class="btn btn-secondary">导出数据</button>
+                <button id="import-json" class="btn btn-secondary">导入数据</button>
+                <button id="clear-all" class="btn btn-danger">清空所有</button>
+            </div>
+        </header>
+
+        <!-- 主画布区域 -->
+        <main class="canvas-container">
+            <div id="year-circle-canvas" class="year-circle-canvas">
+                <!-- 环形月份图将在这里动态生成 -->
+                <svg id="circle-svg" class="circle-svg">
+                    <!-- 连接线（最底层，不遮挡其他元素） -->
+                    <g id="connections-group" class="connections-group"></g>
+                    <!-- 月份圆环 -->
+                    <g id="months-group" class="months-group"></g>
+                    <!-- 日期小点 -->
+                    <g id="dates-group" class="dates-group"></g>
+                </svg>
+                
+                <!-- 记录卡片容器 -->
+                <div id="records-container" class="records-container"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 模态框：添加记录 -->
+    <div id="record-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">添加记录</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="date-info">
+                    <span id="selected-date">选择的日期：</span>
+                </div>
+                
+                <div class="record-type-selector">
+                    <label>
+                        <input type="radio" name="record-type" value="text" checked>
+                        文字记录
+                    </label>
+                    <label>
+                        <input type="radio" name="record-type" value="image">
+                        图片记录
+                    </label>
+                </div>
+                
+                <!-- 边框颜色选择器 -->
+                <div class="border-color-selector">
+                    <label>边框颜色：</label>
+                    <div class="border-color-options">
+                        <div class="border-color-option" data-color="classic">
+                            <input type="radio" name="border-color" value="classic" id="color-classic" checked>
+                            <div class="border-color-preview"></div>
+                            <div class="border-color-name">经典</div>
+                        </div>
+                        <div class="border-color-option" data-color="warm">
+                            <input type="radio" name="border-color" value="warm" id="color-warm">
+                            <div class="border-color-preview"></div>
+                            <div class="border-color-name">温暖</div>
+                        </div>
+                        <div class="border-color-option" data-color="fresh">
+                            <input type="radio" name="border-color" value="fresh" id="color-fresh">
+                            <div class="border-color-preview"></div>
+                            <div class="border-color-name">清新</div>
+                        </div>
+                        <div class="border-color-option" data-color="elegant">
+                            <input type="radio" name="border-color" value="elegant" id="color-elegant">
+                            <div class="border-color-preview"></div>
+                            <div class="border-color-name">优雅</div>
+                        </div>
+                        <div class="border-color-option" data-color="soft">
+                            <input type="radio" name="border-color" value="soft" id="color-soft">
+                            <div class="border-color-preview"></div>
+                            <div class="border-color-name">柔和</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 文字记录表单 -->
+                <div class="text-input-section">
+                    <label for="record-text">记录内容：</label>
+                    <textarea id="record-text" placeholder="在这里输入你的记录..." rows="4"></textarea>
+                </div>
+                
+                <!-- 图片记录表单 -->
+                <div class="image-input-section" style="display: none;">
+                    <div class="image-upload-area">
+                        <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                        <p>点击选择图片或拖拽图片到此处</p>
+                    </div>
+                    <div class="image-preview" style="display: none;"></div>
+                    <label for="image-description">图片描述（可选）：</label>
+                    <textarea id="image-description" placeholder="为图片添加描述..." rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn btn btn-secondary">取消</button>
+                <button class="save-btn btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右键上下文菜单 - V1.2新增 -->
+    <div id="context-menu" class="context-menu" style="display: none;">
+        <div class="context-menu-item" data-action="edit">
+            <span class="context-menu-icon">✏️</span>
+            <span class="context-menu-text">编辑记录</span>
+        </div>
+        <div class="context-menu-item" data-action="delete">
+            <span class="context-menu-icon">🗑️</span>
+            <span class="context-menu-text">删除记录</span>
+        </div>
+    </div>
+
+    <!-- V1.4新增：存储设置模态框 -->
+    <div id="storage-settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>存储设置</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="storage-option">
+                    <h4>存储方式</h4>
+                    <div class="storage-type-selector">
+                        <label class="storage-option-item">
+                            <input type="radio" name="storage-type" value="browser" checked>
+                            <div class="option-content">
+                                <div class="option-title">浏览器存储</div>
+                                <div class="option-description">数据保存在浏览器中，简单快捷</div>
+                            </div>
+                        </label>
+                        <label class="storage-option-item">
+                            <input type="radio" name="storage-type" value="file" id="file-storage-option">
+                            <div class="option-content">
+                                <div class="option-title">本地文件存储</div>
+                                <div class="option-description">数据保存到本地文件夹，更安全可靠</div>
+                                <div class="option-status" id="file-storage-status">
+                                    <span class="status-text">未设置</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="storage-actions">
+                    <button id="select-folder-btn" class="btn btn-primary" style="display: none;">
+                        选择存储文件夹
+                    </button>
+                    <button id="migrate-data-btn" class="btn btn-secondary" style="display: none;">
+                        迁移现有数据
+                    </button>
+                </div>
+
+                <div class="storage-info">
+                    <h4>存储信息</h4>
+                    <div class="info-item">
+                        <span class="info-label">当前存储方式：</span>
+                        <span id="current-storage-type" class="info-value">浏览器存储</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">最后保存时间：</span>
+                        <span id="last-save-time" class="info-value">未保存</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">已保存年份：</span>
+                        <span id="saved-years-count" class="info-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn btn btn-secondary">取消</button>
+                <button class="save-btn btn btn-primary">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载提示 -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p id="loading-text">正在处理...</p>
+        </div>
+    </div>
+
+    <!-- 引入JavaScript文件 -->
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/file-storage.js"></script>
+    <script src="scripts/storage.js"></script>
+    <script src="scripts/circle-renderer.js"></script>
+    <script src="scripts/record-manager.js"></script>
+    <script src="scripts/connection-line-adjuster.js"></script>
+    <script src="scripts/interaction-handler.js"></script>
+    <script src="scripts/export-manager.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
