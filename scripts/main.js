@@ -260,22 +260,25 @@ class YearCircleApp {
         // 渲染圆环
         this.circleRenderer.renderCircle(this.currentYear);
         
-        // 加载起始日期（确保在圆环渲染完成后）
-        this.loadStartDate();
-        
-        // 重新应用已记录日期的状态（圆环渲染会重新创建日期小点，需要重新标记）
-        this.restoreRecordedDateStates();
-        
-        // 延迟重新绘制所有连接线，确保圆环已完全渲染
-        setTimeout(() => {
-            this.redrawAllConnectionLines();
-        }, 100);
-        
-        // 更新年份显示
-        this.updateYearDisplay();
-        
-        // 更新统计信息
-        this.updateStatistics();
+        // 使用requestAnimationFrame确保DOM更新完成后再执行后续操作
+        requestAnimationFrame(() => {
+            // 加载起始日期（确保在圆环渲染完成后）
+            this.loadStartDate();
+            
+            // 重新应用已记录日期的状态（圆环渲染会重新创建日期小点，需要重新标记）
+            this.restoreRecordedDateStates();
+            
+            // 延迟重新绘制所有连接线，确保圆环已完全渲染
+            setTimeout(() => {
+                this.redrawAllConnectionLines();
+            }, 100);
+            
+            // 更新年份显示
+            this.updateYearDisplay();
+            
+            // 更新统计信息
+            this.updateStatistics();
+        });
     }
 
     /**
@@ -624,12 +627,22 @@ class YearCircleApp {
             // 重新渲染圆形图（在加载起始日期之前）
             this.circleRenderer.renderCircle(year);
             
-            // 加载起始日期（确保在CircleRenderer渲染完成后）
-            setTimeout(() => {
+            // 使用requestAnimationFrame确保DOM更新完成后再执行后续操作
+            requestAnimationFrame(() => {
+                // 加载起始日期（确保在CircleRenderer渲染完成后）
                 this.loadStartDate();
+                
+                // 恢复记录状态
+                this.restoreRecordedDateStates();
+                
+                // 延迟重新绘制连接线
+                setTimeout(() => {
+                    this.redrawAllConnectionLines();
+                }, 100);
+                
                 this.updateYearDisplay();
                 this.updateStatistics();
-            }, 100);
+            });
             
             this.hideLoading();
             

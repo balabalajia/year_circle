@@ -652,19 +652,20 @@ body {
     fill: var(--accent-color);
 }
 
-/* 已记录的日期小点 */
+/* 已记录的日期小点 - 增强特异性确保样式生效 */
 .date-dot.recorded,
 .date-dot.has-record {
-    fill: var(--accent-color);
-    stroke: var(--primary-color);
-    stroke-width: 1.5;
-    opacity: 1;
+    fill: var(--accent-color) !important;
+    stroke: var(--primary-color) !important;
+    stroke-width: 1.5 !important;
+    opacity: 1 !important;
 }
 
 .date-dot.recorded:hover,
 .date-dot.has-record:hover {
-    fill: #B8956F;
-    stroke: var(--text-primary);
+    fill: #B8956F !important;
+    stroke: var(--text-primary) !important;
+    stroke-width: 2 !important;
 }
 
 /* 选中的日期小点 */
